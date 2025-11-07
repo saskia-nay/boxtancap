@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "650154917285",
+    "project_id": "boxtancap",
+    "storage_bucket": "boxtancap.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:650154917285:android:7ab9ee21823c247679fc4c",
+        "android_client_info": {
+          "package_name": "com.example.tugas"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCQA5lXrCpSxpSpz2n24WVgQfkMRpyjbGk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
