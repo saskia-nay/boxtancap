@@ -3,7 +3,7 @@ name: Deploy to Firebase Hosting
 on:
   push:
     branches:
-      - main  # ganti jika kamu pakai branch lain
+      - main
 
 jobs:
   build_and_deploy:
@@ -13,16 +13,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          flutter-version: '3.19.6'
-
-      - name: Install dependencies
-        run: flutter pub get
-
-      - name: Build web app
-        run: flutter build web
+      - name: Build Flutter Web
+        run: |
+          flutter build web --release
 
       - name: Deploy to Firebase Hosting
         uses: w9jds/firebase-action@v2.2.0
