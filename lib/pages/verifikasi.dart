@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'login.dart'; 
+import 'login.dart'; // pastikan sudah ada file login.dart
 
 class VerifikasiPage extends StatefulWidget {
   const VerifikasiPage({super.key});
@@ -15,8 +15,6 @@ class _VerifikasiPageState extends State<VerifikasiPage> {
   Timer? _timer;
   int _seconds = 30;
   bool _canResend = false;
-  final List<TextEditingController> _controllers =
-      List.generate(6, (_) => TextEditingController());
 
   @override
   void initState() {
@@ -28,9 +26,6 @@ class _VerifikasiPageState extends State<VerifikasiPage> {
   @override
   void dispose() {
     _timer?.cancel();
-    for (var c in _controllers) {
-      c.dispose();
-    }
     super.dispose();
   }
 
@@ -71,9 +66,9 @@ class _VerifikasiPageState extends State<VerifikasiPage> {
       );
       _startTimer();
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Gagal mengirim ulang email: $e")),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Gagal mengirim ulang email: $e")));
     }
   }
 
@@ -103,6 +98,7 @@ class _VerifikasiPageState extends State<VerifikasiPage> {
     final email = _auth.currentUser?.email ?? "namaemail@gmail.com";
 
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.white,
@@ -112,10 +108,13 @@ class _VerifikasiPageState extends State<VerifikasiPage> {
         ),
       ),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 24),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+            const SizedBox(height: 32),
+
+            // Judul
             const Text(
               "Verifikasi email Anda",
               style: TextStyle(
@@ -123,11 +122,23 @@ class _VerifikasiPageState extends State<VerifikasiPage> {
                 fontWeight: FontWeight.bold,
                 fontSize: 20,
               ),
+              textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 24),
+
+            // Gambar ilustrasi
+            Center(
+              child: Image.asset(
+                'assets/images/email_verify.png', // Ganti sesuai path aset kamu
+                height: 220,
+              ),
+            ),
+            const SizedBox(height: 24),
+
+            // Deskripsi
             Text.rich(
               TextSpan(
-                text: "Masukkan kode 6 digit yang dikirimkan kepada Anda pada ",
+                text: "Link verifikasi telah dikirimkan ke ",
                 style: const TextStyle(fontSize: 14, color: Colors.black87),
                 children: [
                   TextSpan(
@@ -137,76 +148,22 @@ class _VerifikasiPageState extends State<VerifikasiPage> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
+                  const TextSpan(
+                    text:
+                        " Segera cek email dan klik link yang tertera agar bisa melanjutkan proses pendaftaran akun Boxtancap Anda.",
+                  ),
                 ],
               ),
+              textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 40),
 
-            // 🔹 6 kotak input (UI-only)
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: List.generate(6, (index) {
-                return SizedBox(
-                  width: 45,
-                  child: TextField(
-                    controller: _controllers[index],
-                    textAlign: TextAlign.center,
-                    keyboardType: TextInputType.number,
-                    maxLength: 1,
-                    decoration: InputDecoration(
-                      counterText: "",
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(color: Colors.grey),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide:
-                            const BorderSide(color: Color(0xFF003366), width: 2),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                    onChanged: (value) {
-                      if (value.isNotEmpty && index < 5) {
-                        FocusScope.of(context).nextFocus();
-                      }
-                    },
-                  ),
-                );
-              }),
-            ),
-            const SizedBox(height: 24),
-
-            // 🔁 Kirim ulang
-            Row(
-              children: [
-                const Text("Tidak mendapatkan email? "),
-                GestureDetector(
-                  onTap: _canResend ? _resendEmail : null,
-                  child: Text(
-                    "Kirim Ulang",
-                    style: TextStyle(
-                      color: _canResend
-                          ? const Color(0xFF003366)
-                          : Colors.grey.shade500,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            Text(
-              "(Tunggu $_seconds detik sebelum klik kirim ulang)",
-              style: const TextStyle(fontSize: 12, color: Colors.black54),
-            ),
-
-            const Spacer(),
-
-            // 🔘 Tombol verifikasi
+            // Tombol kirim ulang email
             SizedBox(
               width: double.infinity,
               height: 48,
               child: ElevatedButton(
-                onPressed: _checkVerification,
+                onPressed: _canResend ? _resendEmail : null,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF003366),
                   shape: RoundedRectangleBorder(
@@ -214,12 +171,36 @@ class _VerifikasiPageState extends State<VerifikasiPage> {
                   ),
                 ),
                 child: const Text(
-                  "Saya sudah verifikasi",
+                  "Kirim Ulang Email",
                   style: TextStyle(color: Colors.white, fontSize: 16),
                 ),
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 12),
+
+            // Timer text
+            Text(
+              "(Tunggu $_seconds detik sebelum klik kirim ulang)",
+              style: const TextStyle(fontSize: 12, color: Colors.black54),
+            ),
+            const SizedBox(height: 24),
+
+            // Tombol verifikasi (tetap fungsional tapi tidak di gambar)
+            SizedBox(
+              width: double.infinity,
+              height: 48,
+              child: TextButton(
+                onPressed: _checkVerification,
+                child: const Text(
+                  "Saya sudah verifikasi",
+                  style: TextStyle(
+                    color: Color(0xFF003366),
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  ),
+                ),
+              ),
+            ),
           ],
         ),
       ),
