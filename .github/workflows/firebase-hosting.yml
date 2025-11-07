@@ -3,20 +3,28 @@ name: Deploy to Firebase Hosting
 on:
   push:
     branches:
-      - main
+      - main  # atau ganti dengan branch utama kamu
 
 jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
 
     steps:
+      # 1. Checkout repository
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Build Flutter Web
-        run: |
-          flutter build web --release
+      # 2. Setup Flutter environment
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.19.0'  # atau versi yang kamu gunakan di lokal
 
+      # 3. Build Flutter web
+      - name: Build Flutter Web
+        run: flutter build web --release
+
+      # 4. Deploy ke Firebase Hosting
       - name: Deploy to Firebase Hosting
         uses: w9jds/firebase-action@v2.2.0
         with:
